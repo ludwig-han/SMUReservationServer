@@ -4,3 +4,4 @@ Database_Schema.xlsx
 smu-venv/
 *.pyc
 __pycache__/
+instance/app.db

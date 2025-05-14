@@ -6,6 +6,9 @@ class Settings():
     BOARD_MAX_CONTENT_LENGTH = 300
     COMMENT_MAX_CONTENT_LENGTH = 300
 
+    ACCESS_TOKEN_EXPIRES_HOURS = 1
+    REFRESH_TOKEN_EXPIRES_DAY = 90
+
     def to_dict(self):
         return {
             "RESERVATION_OPEN_HOUR" : self.RESERVATION_OPEN_HOUR,

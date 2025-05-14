@@ -1,11 +1,12 @@
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_jwt_extended import create_refresh_token, create_access_token, get_jwt_identity, jwt_required, get_jwt, jwt_expired_token_loader
 from datetime import datetime, date, time, timedelta
-from app.models import User, Room, Reservation, Board, BoardComment, UserStatusLog, UserRoleLog
+from app.models import User, Room, Reservation, Board, BoardComment, UserStatusLog, UserRoleLog, RefreshTokenBlocklist
 from app.enums import ReservationStatus, UserStatus, BoardStatus, UserRole
 from app import db
 from sangmyung_univ_auth import auth_detail, auth
 from sqlalchemy import desc, case, or_, and_, asc
+import pytz
 from pytz import timezone
 from constants.settings import Settings
 from utils import stringToDatetime, stringToTime
@@ -27,6 +28,54 @@ def get_user_info(id):
     return jsonify(user.to_dict()), 200
 
 
+@bp.route('/refresh', methods=['POST'])
+@jwt_required(refresh=True)
+def refresh():
+    jti = get_jwt()["jti"]
+    # DB에 해당 토큰이 있는지 확인
+    if RefreshTokenBlocklist.query.filter_by(jti=jti).first():
+        return jsonify({"msg": "Token revoked or invalid"}), 401
+
+    current_user = get_jwt_identity()
+    new_access_token = create_access_token(identity=current_user)
+    return jsonify(access_token=new_access_token)
+
+
+# BELOW FUNCTION IS FOR DEBUGGING
+@bp.route('/refresh_tokens', methods=['GET'])
+def get_all_refresh_tokens():
+    tokens = RefreshTokenBlocklist.query.all()
+    result = []
+    for token in tokens:
+        result.append({
+            'id': token.id,
+            'jti': token.jti,
+            'user_identity': token.user_identity,
+            'expires': token.expires.strftime('%Y-%m-%d %H:%M:%S'),
+            'created_at': token.created_at.strftime('%Y-%m-%d %H:%M:%S') if token.created_at else None
+        })
+    return jsonify(result)
+
+@bp.route('/logout', methods=['POST'])
+@jwt_required(refresh=True)
+def logout():
+    jti = get_jwt()["jti"]
+    identity = get_jwt_identity()
+    expires = datetime.now(timezone('Asia/Seoul')) + timedelta(days=Settings.REFRESH_TOKEN_EXPIRES_DAY)
+
+    # 블랙리스트에 등록
+    db.session.add(RefreshTokenBlocklist(jti=jti, user_identity=identity, expires=expires))
+    db.session.commit()
+
+    return jsonify(msg="Logged out successfully")
+
+@jwt.expired_token_loader
+def expired_token_callback(jwt_header, jwt_payload):
+    return jsonify({
+        "msg": "The token has expired"
+    }), 401
+
+
 @bp.route('/login', methods=['POST'])
 def login():
     user_id = request.form['userId']
@@ -44,6 +93,7 @@ def login():
         return jsonify(result), 401
     else:
         access_token = create_access_token(identity=user_id)
+        refresh_token = create_refresh_token(identity=user_id)
 
         user = User.query.filter_by(user_id=user_id).first()
 
@@ -58,6 +108,7 @@ def login():
             result = {
                 "is_auth": result['is_auth'],
                 "access_token": access_token,
+                "refresh_token": refresh_token,
                 "user": user.to_dict(),
             }
             return jsonify(result), 200

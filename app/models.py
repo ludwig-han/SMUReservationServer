@@ -4,6 +4,7 @@ from sqlalchemy import Enum as dbEnum
 from app.enums import UserRole, UserStatus, RoomStatus, RoomLocation, ReservationStatus, BoardStatus
 from constants.settings import Settings
 from datetime import datetime
+import pytz
 from pytz import timezone
 from utils import stringToTime
 
@@ -256,3 +257,10 @@ class UserRoleLog(db.Model):
         }
 
         return result
+    
+class RefreshTokenBlocklist(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    jti = db.Column(db.String(36), nullable=False, unique=True)  # JWT 고유 ID
+    user_identity = db.Column(db.String(100), nullable=False)
+    expires = db.Column(db.DateTime, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now(pytz.timezone('Asia/Seoul')))

@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import create_refresh_token, create_access_token, get_jwt_identity, jwt_required, get_jwt, jwt_expired_token_loader
+from flask_jwt_extended import create_refresh_token, create_access_token, get_jwt_identity, jwt_required, get_jwt
 from datetime import datetime, date, time, timedelta
 from app.models import User, Room, Reservation, Board, BoardComment, UserStatusLog, UserRoleLog, RefreshTokenBlocklist
 from app.enums import ReservationStatus, UserStatus, BoardStatus, UserRole

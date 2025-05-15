@@ -69,12 +69,6 @@ def logout():
 
     return jsonify(msg="Logged out successfully")
 
-@jwt.expired_token_loader
-def expired_token_callback(jwt_header, jwt_payload):
-    return jsonify({
-        "msg": "The token has expired"
-    }), 401
-
 
 @bp.route('/login', methods=['POST'])
 def login():

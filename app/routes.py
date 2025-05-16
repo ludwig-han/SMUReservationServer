@@ -86,9 +86,6 @@ def login():
         result['access_token'] = None
         return jsonify(result), 401
     else:
-        access_token = create_access_token(identity=user_id)
-        refresh_token = create_refresh_token(identity=user_id)
-
         user = User.query.filter_by(user_id=user_id).first()
 
         if user is None:
@@ -98,6 +95,9 @@ def login():
             return jsonify({"message": "승인 대기 중인 계정입니다. 관리자에게 문의하세요."}), 403
 
         else:
+            access_token = create_access_token(identity=user_id)
+            refresh_token = create_refresh_token(identity=user_id)
+            
             print('가입 날짜: ', user.created_at)
             result = {
                 "is_auth": result['is_auth'],
@@ -761,7 +761,7 @@ f'''같은 시간에 중복된 예약이 존재합니다.
                 )).all()
 
         if (reservations):
-            return jsonify({"message":"이미 예약된 시간대입니다."}), 409
+            return jsonify({"message":"이미 예약된 시간대입니다. 새로고침 후 이용해주세요."}), 409
 
     # 해당 연습실의 최대 연습 시간을 넘기지 않았는지 확인합니다.
     # 18시 이전 예약의 경우 3시간, 18시를 포함하는 경우 4시간까지 허용됩니다.
@@ -791,8 +791,8 @@ f'''같은 시간에 중복된 예약이 존재합니다.
                 _reserved_time_before18 = datetime.combine(date.today(), time(18, 0, 0)) - datetime.combine(date.today(), _start_time.time())  # timedelta
                 _reserved_time_after18 = datetime.combine(date.today(), _end_time.time()) - datetime.combine(date.today(), time(18, 0, 0))
             elif (time(18, 0, 0) <= _start_time.time()):
-                _reserved_time_after18 = end_time - start_time    # timedelta
-                pass
+                _reserved_time_after18 = _end_time - _start_time    # timedelta
+                #pass
             else:
                 return jsonify({"message": "예약 조건 확인 중 2번 오류 발생"}), 404
             
@@ -819,7 +819,7 @@ f'''18시 이전 예약의 경우, 한 방에 최대 3시간까지만 예약할 
             return jsonify({'message':
 f'''18시 이후를 포함하는 경우, 한 방에 최대 4시간까지 예약할 수 있습니다.
 현재 이 방에 예약된 시간: {str(total_reserved_time - (_time_to_reserve_before18 + _time_to_reserve_after18))}'''}), 409
-            
+        
 
 
     # 모든 것에 문제가 없으면 예약을 생성합니다.
@@ -879,8 +879,7 @@ def delete_reservation(reservation_id):
         db.session.commit()
         return jsonify({"message":
 f'''취소되었습니다.
-오늘 18시 이전 사용 시간: {user.today_reserved_time}
-(18시 이후는 사용 시간 제한 없음)'''}), 200
+오늘 18시 이전 사용 시간: {user.today_reserved_time}'''}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": str(e)}), 500
@@ -902,8 +901,8 @@ def get_reservations_by_user(user_id):
         ),
         asc(Reservation.start_time)
         ).all()
-    for reservation in reservations:
-        print(reservation.to_dict())
+    #for reservation in reservations:
+    #    print(reservation.to_dict())
     return jsonify([reservation.to_dict() for reservation in reservations]), 200
 
 
@@ -923,12 +922,9 @@ def get_reservations_by_room_and_date(room_id, date):
     room_id = int(room_id)
 
     reservation_date = datetime.strptime(date, '%Y-%m-%d')
-    print('reservation_date: ',reservation_date)
 
     start_of_day = reservation_date.replace(hour=0, minute=0, second=0, microsecond=0)
     end_of_day = reservation_date.replace(hour=23, minute=59, second=59, microsecond=999999)
-    print('start_of_day: ',start_of_day)
-    print('end_of_day: ',end_of_day)
 
     try:
         reservations = Reservation.query.filter(
@@ -938,8 +934,8 @@ def get_reservations_by_room_and_date(room_id, date):
             Reservation.status != ReservationStatus.CANCELLED
         ).all()
 
-        for reservation in reservations:        # debug
-            print(reservation.to_dict())
+        #for reservation in reservations:        # debug
+        #    print(reservation.to_dict())
 
         return jsonify([reservation.to_dict() for reservation in reservations]), 200
 

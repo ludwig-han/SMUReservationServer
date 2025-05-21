@@ -26,6 +26,11 @@ class ReservationStatus(Enum):
     CANCELLED = 'cancelled'     # 취소됨
     COMPLETED = 'completed'     # 완료됨
 
+class ReservationLocationStatus(Enum):
+    UNVERIFIED = 'unverified'     # 미인증
+    VERIFIED = 'verifed'         # 인증 완료
+    FAILED = 'failed'       # 인증 실패 (==기한초과)
+
 class BoardStatus(Enum):
     SUBMITTED = 'submitted'         # 제출됨
     

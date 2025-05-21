@@ -1,7 +1,7 @@
 # app/models.py
 from app import db  # app/__init__.py에서 선언한 db 객체 가져오기
 from sqlalchemy import Enum as dbEnum
-from app.enums import UserRole, UserStatus, RoomStatus, RoomLocation, ReservationStatus, BoardStatus
+from app.enums import UserRole, UserStatus, RoomStatus, RoomLocation, ReservationStatus, BoardStatus, ReservationLocationStatus
 from constants.settings import Settings
 from datetime import datetime
 import pytz
@@ -89,6 +89,7 @@ class Reservation(db.Model):
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
     status = db.Column(dbEnum(ReservationStatus), nullable=False, default=ReservationStatus.RESERVED)
+    location_status = db.Column(dbEnum(ReservationLocationStatus), nullable=False, default=ReservationLocationStatus.UNVERIFIED)
     #time = datetime.now(timezone('Asia/Seoul')).replace(microsecond=0)
     created_at = db.Column(db.DateTime, nullable=False)
 
@@ -117,6 +118,7 @@ class Reservation(db.Model):
             #'start_time': f'{start.year}-{start.month}-{start.day}-{start.hour}-{start.minute}-{start.second}',
             #'end_time': f'{end.year}-{end.month}-{end.day}-{end.hour}-{end.minute}-{end.second}',
             'status': self.status.value,
+            'location_status': self.location_status.value,
             'created_at': created
             #'created_at': f'{created.year}-{created.month}-{created.day}-{created.hour}-{created.minute}-{created.second}'
         }

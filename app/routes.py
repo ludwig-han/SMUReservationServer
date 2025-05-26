@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from flask_jwt_extended import create_refresh_token, create_access_token, get_jwt_identity, jwt_required, get_jwt
 from datetime import datetime, date, time, timedelta
 from app.models import User, Room, Reservation, Board, BoardComment, UserStatusLog, UserRoleLog, RefreshTokenBlocklist
-from app.enums import ReservationStatus, UserStatus, BoardStatus, UserRole
+from app.enums import ReservationStatus, UserStatus, BoardStatus, UserRole, ReservationLocationStatus
 from app import db
 from sangmyung_univ_auth import auth_detail, auth
 from sqlalchemy import desc, case, or_, and_, asc
@@ -899,7 +899,7 @@ def get_reservations_by_user(user_id):
             (Reservation.status == ReservationStatus.RESERVED, 0),
             else_=1
         ),
-        asc(Reservation.start_time)
+        desc(Reservation.start_time)
         ).all()
     #for reservation in reservations:
     #    print(reservation.to_dict())
@@ -943,8 +943,41 @@ def get_reservations_by_room_and_date(room_id, date):
         return jsonify({"message": "데이터베이스 처리 중 오류가 발생하였습니다."}), 500
 
 
+@bp.route('/reservations/verify/<int:reservation_id>', methods=['PUT'])
+@jwt_required()
+def verify_reservation(reservation_id):
+    reservation = Reservation.query.filter_by(id=reservation_id).first()
+
+    if reservation is None:
+        return jsonify({"message": "예약 내역을 찾을 수 없습니다."}), 404
+    
+    if reservation.location_status.value == ReservationLocationStatus.FAILED:
+        return jsonify({"message": "이미 만료된 예약입니다."}), 400
+    elif reservation.location_status.value == ReservationLocationStatus.VERIFIED:
+        return jsonify({"message": "이미 인증된 예약입니다."}), 409
+
+    #if reservation.status.value != ReservationStatus.RESERVED.value:
+    #    return jsonify({"message": "해당 레코드는 예약 상태가 아닙니다."}), 400
+
+    try:
+        # 인증 가능한 시간(연습시작 후 15분 내)인지 확인
+        if False:
+            return jsonify({"message":"인증 가능한 시간을 초과하였습니다."}), 409
+
+
+        
+        reservation.location_status = ReservationLocationStatus.VERIFIED
+
+        db.session.commit()
+        return jsonify({"message":
+f'''인증되었습니다.'''}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": str(e)}), 500
+
+
 # 게시물 목록 전체를 불러옵니다.
-# 정렬 기준: 상태 최종 업데이트 오름차순
+# 정렬 기준: 상태 최종 업데이트 오름차순x
 @bp.route('/boards', methods=['GET'])
 @jwt_required()
 def get_boards():

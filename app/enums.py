@@ -27,9 +27,10 @@ class ReservationStatus(Enum):
     COMPLETED = 'completed'     # 완료됨
 
 class ReservationLocationStatus(Enum):
-    UNVERIFIED = 'unverified'     # 미인증
-    VERIFIED = 'verified'         # 인증 완료
-    FAILED = 'failed'       # 인증 실패 (==기한초과)
+    UNVERIFIED = 'unverified'       # 미인증
+    VERIFIED = 'verified'           # 인증 완료
+    FAILED = 'failed'               # 인증 실패 (==기한초과)
+    CANCELLED = 'cancelled'         # 예약 취소함에 따른 인증 필요성 x
 
 class BoardStatus(Enum):
     SUBMITTED = 'submitted'         # 제출됨

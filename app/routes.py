@@ -677,6 +677,12 @@ def create_reservation():
         start_time = datetime.fromisoformat(input_start_time_str)
         end_time = datetime.fromisoformat(input_end_time_str)
 
+        # 예약 시작 시간 기준 10분 지나면 예약 불가 처리
+        now = datetime.now()
+        if start_time + timedelta(minutes=10) < now:
+            return jsonify({"message": "예약 시작시간으로부터 10분이 지났으므로 예약할 수 없습니다."}), 400
+
+
     # 유저가 하루 예약 가능 시간을 초과했는지 검사합니다.
     # 18시 이후의 건은 하루 예약 가능 시간에 포함되지 않습니다.
         print('현재 예약 토탈: ', user.today_reserved_time)
@@ -855,6 +861,7 @@ def delete_reservation(reservation_id):
 
     try:
         reservation.status = ReservationStatus.CANCELLED
+        reservation.location_status = ReservationLocationStatus.CANCELLED
 
         # 유저의 하루 예약 가능 시간을 다시 늘려줘야 합니다.
         _reservation = reservation.to_dict()
@@ -960,11 +967,19 @@ def verify_reservation(reservation_id):
     #    return jsonify({"message": "해당 레코드는 예약 상태가 아닙니다."}), 400
 
     try:
-        # 인증 가능한 시간(연습시작 후 15분 내)인지 확인
-        if False:
-            return jsonify({"message":"인증 가능한 시간을 초과하였습니다."}), 409
+        # 현재 한국 시간
+        now = datetime.now(timezone('Asia/Seoul'))
 
+        # start_time을 서울 시간으로 localize
+        seoul = timezone('Asia/Seoul')
+        start_time_aware = seoul.localize(reservation.start_time)
 
+        # 시작 시간부터 15분 이내인지 확인
+        if now > start_time_aware + timedelta(minutes=15):
+            reservation.location_status = ReservationLocationStatus.FAILED
+            reservation.status = ReservationStatus.CANCELLED  # 또는 EXPIRED, FAILED 등 사용 중인 enum에 맞춰 설정
+            db.session.commit()
+            return jsonify({"message": "인증 시간이 초과되어 예약이 자동 취소되었습니다."}), 409
         
         reservation.location_status = ReservationLocationStatus.VERIFIED
 

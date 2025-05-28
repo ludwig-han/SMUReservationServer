@@ -33,18 +33,18 @@ def seed_data():
         Room(number='UB414', name='레슨실8', location='UB', floor=4, status=RoomStatus.AVAILABLE),
 
         # M관 (일요일 건물폐쇄)
-        Room(number='M013', name='연습실 M013', location='M', floor=1, status=RoomStatus.AVAILABLE),
-        Room(number='M014', name='연습실 M014', location='M', floor=1, status=RoomStatus.AVAILABLE),
-        Room(number='M015', name='연습실 M015', location='M', floor=1, status=RoomStatus.AVAILABLE),
-        Room(number='M016', name='연습실 M016', location='M', floor=1, status=RoomStatus.AVAILABLE),
-        Room(number='M017', name='연습실 M017', location='M', floor=1, status=RoomStatus.AVAILABLE),
-        Room(number='M018', name='연습실 M018', location='M', floor=1, status=RoomStatus.AVAILABLE),
-        Room(number='M031', name='연습실 M031', location='M', floor=1, status=RoomStatus.AVAILABLE),
-        Room(number='M032', name='연습실 M032', location='M', floor=1, status=RoomStatus.AVAILABLE),
-        Room(number='M033', name='연습실 M033', location='M', floor=1, status=RoomStatus.AVAILABLE),
-        Room(number='M034', name='연습실 M034', location='M', floor=1, status=RoomStatus.AVAILABLE),
-        Room(number='M035', name='연습실 M035', location='M', floor=1, status=RoomStatus.AVAILABLE),
-        Room(number='M036', name='연습실 M036', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M013', name='', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M014', name='', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M015', name='', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M016', name='', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M017', name='', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M018', name='', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M031', name='', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M032', name='', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M033', name='', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M034', name='', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M035', name='', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M036', name='', location='M', floor=1, status=RoomStatus.AVAILABLE),
 
     ]
 

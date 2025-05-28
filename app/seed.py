@@ -5,6 +5,7 @@ from datetime import datetime
 
 def seed_data():
     rooms = [
+        # 문화예술관 3층
         Room(number='UB301', name='레슨실17', location='UB', floor=3, status=RoomStatus.AVAILABLE),
         Room(number='UB302', name='레슨실16', location='UB', floor=3, status=RoomStatus.AVAILABLE),
         Room(number='UB303', name='레슨실15', location='UB', floor=3, status=RoomStatus.AVAILABLE),
@@ -15,6 +16,36 @@ def seed_data():
         Room(number='UB308', name='레슨실10', location='UB', floor=3, status=RoomStatus.AVAILABLE),
         Room(number='UB309', name='레슨실9', location='UB', floor=3, status=RoomStatus.AVAILABLE),
         Room(number='UB310', name='레슨실8', location='UB', floor=3, status=RoomStatus.AVAILABLE),
+
+        # UB 4층
+        Room(number='UB402', name='레슨실7', location='UB', floor=4, status=RoomStatus.CLOSED),
+        Room(number='UB403', name='레슨실6', location='UB', floor=4, status=RoomStatus.AVAILABLE),
+        Room(number='UB404', name='레슨실5', location='UB', floor=4, status=RoomStatus.AVAILABLE),
+        Room(number='UB405', name='레슨실4', location='UB', floor=4, status=RoomStatus.AVAILABLE),
+        Room(number='UB406', name='레슨실3', location='UB', floor=4, status=RoomStatus.AVAILABLE),
+        Room(number='UB407', name='레슨실2', location='UB', floor=4, status=RoomStatus.AVAILABLE),
+        Room(number='UB408', name='레슨실1', location='UB', floor=4, status=RoomStatus.AVAILABLE),
+        Room(number='UB409', name='합창실', location='UB', floor=4, status=RoomStatus.AVAILABLE),
+        Room(number='UB410', name='합주실', location='UB', floor=4, status=RoomStatus.AVAILABLE),
+        Room(number='UB411', name='타악기1', location='UB', floor=4, status=RoomStatus.AVAILABLE),
+        Room(number='UB412', name='타악기2', location='UB', floor=4, status=RoomStatus.AVAILABLE),
+        Room(number='UB413', name='레슨실9', location='UB', floor=4, status=RoomStatus.AVAILABLE),
+        Room(number='UB414', name='레슨실8', location='UB', floor=4, status=RoomStatus.AVAILABLE),
+
+        # M관 (일요일 건물폐쇄)
+        Room(number='M013', name='연습실 M013', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M014', name='연습실 M014', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M015', name='연습실 M015', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M016', name='연습실 M016', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M017', name='연습실 M017', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M018', name='연습실 M018', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M031', name='연습실 M031', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M032', name='연습실 M032', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M033', name='연습실 M033', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M034', name='연습실 M034', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M035', name='연습실 M035', location='M', floor=1, status=RoomStatus.AVAILABLE),
+        Room(number='M036', name='연습실 M036', location='M', floor=1, status=RoomStatus.AVAILABLE),
+
     ]
 
     db.session.bulk_save_objects(rooms)
